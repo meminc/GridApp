@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: griduser
+          POSTGRES_PASSWORD: gridpass
+          POSTGRES_DB: grid
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      neo4j:
+        image: neo4j:5
+        env:
+          NEO4J_AUTH: neo4j/test
+        ports:
+          - 7474:7474
+          - 7687:7687
+        options: >-
+          --health-cmd "cypher-shell -u neo4j -p test 'RETURN 1'" --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          npm install || true
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install || true
+      - name: Run backend tests (placeholder)
+        run: |
+          cd backend
+          echo "No tests yet"
+      - name: Run frontend tests (placeholder)
+        run: |
+          cd frontend
+          echo "No tests yet" 

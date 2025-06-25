@@ -2,7 +2,7 @@ version: '3.8'
 services:
   backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     ports:
       - "4000:4000"
@@ -11,8 +11,8 @@ services:
       - neo4j
   frontend:
     build:
-      context: .
-      dockerfile: Dockerfile.frontend
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     depends_on:
@@ -25,6 +25,8 @@ services:
       POSTGRES_DB: grid
     ports:
       - "5432:5432"
+    volumes:
+      - ./db-init/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
   timescaledb:
     image: timescale/timescaledb:latest-pg15
     environment:
@@ -33,10 +35,15 @@ services:
       POSTGRES_DB: grid
     ports:
       - "5433:5432"
+    volumes:
+      - ./db-init/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
   neo4j:
     image: neo4j:5
     environment:
-      NEO4J_AUTH: neo4j/test
+      NEO4J_AUTH: neo4j/test1234
     ports:
       - "7474:7474"
-      - "7687:7687" 
+      - "7687:7687"
+    volumes:
+      - ./db-init/init.cypher:/init.cypher:ro
+    command: ["neo4j", "admin", "database", "load", "--from-path=/init.cypher", "--overwrite-destination=true", "neo4j"] 

@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    depends_on:
+      - postgres
+      - neo4j
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: griduser
+      POSTGRES_PASSWORD: gridpass
+      POSTGRES_DB: grid
+    ports:
+      - "5432:5432"
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    environment:
+      POSTGRES_USER: griduser
+      POSTGRES_PASSWORD: gridpass
+      POSTGRES_DB: grid
+    ports:
+      - "5433:5432"
+  neo4j:
+    image: neo4j:5
+    environment:
+      NEO4J_AUTH: neo4j/test
+    ports:
+      - "7474:7474"
+      - "7687:7687" 

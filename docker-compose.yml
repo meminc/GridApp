@@ -9,6 +9,9 @@ services:
     depends_on:
       - postgres
       - neo4j
+    volumes:
+      - ./backend:/app
+    command: npx nodemon index.js
   frontend:
     build:
       context: ./frontend
@@ -17,6 +20,8 @@ services:
       - "3000:3000"
     depends_on:
       - backend
+    volumes:
+      - ./frontend:/app
   postgres:
     image: postgres:15
     environment:
@@ -24,7 +29,7 @@ services:
       POSTGRES_PASSWORD: gridpass
       POSTGRES_DB: grid
     ports:
-      - "5432:5432"
+      - "5430:5432"
     volumes:
       - ./db-init/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
   timescaledb:

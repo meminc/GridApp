@@ -2,6 +2,6 @@
 FROM node:20-alpine
 WORKDIR /app
 COPY package.json ./
-RUN npm install || true
+RUN npm install && npm install -g nodemon
 COPY . .
-CMD ["npm", "start"] 
+CMD ["npx", "nodemon", "index.js"] 
